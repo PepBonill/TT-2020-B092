@@ -38,7 +38,8 @@ def obtenerDatos(ruta):
     return my_data
 
 
-mypath="H:\Django\miEntorno\dashboard\media\myfolder"
+mypath=str(pathlib.Path().resolve())
+mypath = mypath + "/media/myfolder"
 
 files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
@@ -247,6 +248,7 @@ def toggle_modal(n1, n2, is_open):
 def display_graphs(graph_type, graph_title):
     
     df = obtenerDatos(graph_title)
+    data = df.copy(deep=True)
 
     if(df.empty):
         return
@@ -291,14 +293,16 @@ def display_graphs(graph_type, graph_title):
     Output("graph-patterns", "figure"),
     [Input('patrones', 'value'),
     Input("my-slider", "value"),
-    Input("buscar", "n_clicks")]
+    Input("buscar", "n_clicks"),
+    Input('crossfilter-xaxis-column','value')]
     )
 #Entradas: patrones a buscar, error de segmentación
-def display_patterns(listaPatrones, errorSegmentacion, botonBuscar):
+def display_patterns(listaPatrones, errorSegmentacion, botonBuscar, graph_title):
 
     fig = go.Figure()
     title = "Búsqueda "
 
+    df = obtenerDatos(graph_title)
     data = df.copy(deep=True)
 
     if(botonBuscar != 0 and listaPatrones):
@@ -350,13 +354,16 @@ def display_patterns(listaPatrones, errorSegmentacion, botonBuscar):
     Output("graph-prediction", "figure"),
     [Input('dtrue', 'value'),
     Input("my-slider-2", "value"),
-    Input("predecir", "n_clicks")]
+    Input("predecir", "n_clicks"),
+    Input('crossfilter-xaxis-column','value')]
     )
 #Entradas: dias a predecir, precision de entrenamiento
-def display_predictions(diasPrediccion, precisionPrediccion, botonPrediccion):
+def display_predictions(diasPrediccion, precisionPrediccion, botonPrediccion,
+	 graph_title):
     
     fig = go.Figure()
 
+    df = obtenerDatos(graph_title)
     data = df.copy(deep=True)
 
     if (botonPrediccion != 0 and diasPrediccion > 0 ):
